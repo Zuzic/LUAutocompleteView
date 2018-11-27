@@ -72,6 +72,7 @@ open class LUAutocompleteView: UIView {
             height = tableView.contentSize.height
         }
     }
+    
     private var height: CGFloat = 0 {
         didSet {
             guard height != oldValue else {
