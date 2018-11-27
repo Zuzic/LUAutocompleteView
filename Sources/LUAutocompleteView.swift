@@ -201,7 +201,7 @@ extension LUAutocompleteView: UITableViewDataSource {
     - Returns: The number of rows in `section`.
     */
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return !(inputText?.isEmpty ?? true) ? 3 : 0
+        return !(inputText?.isEmpty ?? true) ? elements.count : 0
     }
 
     /** Asks the data source for a cell to insert in a particular location of the table view.
