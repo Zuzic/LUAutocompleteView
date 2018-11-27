@@ -24,7 +24,7 @@ final class ViewController: UIViewController {
 
         view.addSubview(autocompleteView)
 
-        autocompleteView.textField = textField
+//        autocompleteView.textField = textField
         autocompleteView.dataSource = self
         autocompleteView.delegate = self
 

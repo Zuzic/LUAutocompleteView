@@ -30,15 +30,11 @@ open class LUAutocompleteView: UIView {
     */
     public var textAttributes: [NSAttributedString.Key: Any]?
     /// The text field to which the autocomplete view will be attached.
-    public weak var textField: UITextField? {
+    public weak var textField: UIView? {
         didSet {
-            guard let textField = textField else {
+            guard textField != nil else {
                 return
             }
-
-            textField.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
-            textField.addTarget(self, action: #selector(textFieldEditingEnded), for: .editingDidEnd)
-
             setupConstraints()
         }
     }
@@ -66,7 +62,7 @@ open class LUAutocompleteView: UIView {
     }
 
     // MARK: - Private Properties
-
+    private var inputText:String?
     private let tableView = UITableView()
     private var heightConstraint: NSLayoutConstraint?
     private static let cellIdentifier = "AutocompleteCellIdentifier"
@@ -122,6 +118,12 @@ open class LUAutocompleteView: UIView {
 
         commonInit()
     }
+    
+    public func update(text:String?) {
+         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(getElements), object: nil)
+        inputText = text
+        perform(#selector(getElements), with: nil, afterDelay: throttleTime)
+    }
 
     // MARK: - Private Functions
 
@@ -171,12 +173,14 @@ open class LUAutocompleteView: UIView {
         perform(#selector(getElements), with: nil, afterDelay: throttleTime)
     }
 
+    
+    
     @objc private func getElements() {
         guard let dataSource = dataSource else {
             return
         }
 
-        guard let text = textField?.text, !text.isEmpty else {
+        guard let text = inputText, !text.isEmpty else {
             elements.removeAll()
             return
         }
@@ -203,7 +207,7 @@ extension LUAutocompleteView: UITableViewDataSource {
     - Returns: The number of rows in `section`.
     */
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return !(textField?.text?.isEmpty ?? true) ? elements.count : 0
+        return !(inputText?.isEmpty ?? true) ? elements.count : 0
     }
 
     /** Asks the data source for a cell to insert in a particular location of the table view.
@@ -258,7 +262,6 @@ extension LUAutocompleteView: UITableViewDelegate {
         if shouldHideAfterSelecting {
             height = 0
         }
-        textField?.text = elements[indexPath.row]
         delegate?.autocompleteView(self, didSelect: elements[indexPath.row])
     }
 }
